@@ -4,7 +4,7 @@ module.exports = function(robot) {
     var name = msg.match[1].trim().toUpperCase();
 
     if (name === "LIST") {
-      msg.send("Spell List: https://iqdndbot.herokuapp.com/spells");
+      msg.send("Spell Reference: https://donjon.bin.sh/5e/spells/");
       return;
     }
 
@@ -20,18 +20,6 @@ module.exports = function(robot) {
       }
     }
     msg.send(summary);
-  });
-
-  robot.router.get("/spells", function(req, res) {
-    res.setHeader('content-type', 'text/html');
-    var html = "<html><body><h1>Spell List</h1><ul>";
-    for(var key in spells) {
-      if(spells.hasOwnProperty(key)) { //to be safe
-        html += "<li>"+key+"</li>";
-      }
-    }
-    html += "</ul></body></html>";
-    res.send(html);
   });
 
 }
