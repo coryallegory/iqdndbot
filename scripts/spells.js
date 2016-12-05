@@ -2,21 +2,69 @@ module.exports = function(robot) {
 
   robot.respond(/spell (.*)/i, function(msg) {
     var name = msg.match[1].trim().toUpperCase();
+
+    if (name === "LIST") {
+      msg.send("Spell List: https://iqdndbot.herokuapp.com/spells");
+      return;
+    }
+
     var summary = "Spell not found.";
     for (var n in spells) {
       if (n.toUpperCase() === name) {
         var spell = spells[n];
         summary = n+"\n";
-        summary += "_" + spell.casting_time + ", " + spell.duration + ", " + spell.range + "\n";
-        summary += spell.school + ", " + spell.components + "_\n";
-        summary += "```" + spell.description + "```"
+        summary += "_" + spell.casting_time + ", " + spell.duration + ", " + spell.range + "_\n";
+        summary += "_" + spell.school + ", " + spell.components + "_\n";
+        summary += "\`\`\`" + spell.description + "\`\`\`"
         break;
       }
     }
-    msg.reply(summary);
+    msg.send(summary);
+  });
+
+  robot.router.get("/spells", function(req, res) {
+    res.setHeader('content-type', 'text/html');
+    res.end(html);
   });
 
 }
+
+var html = `
+<html>
+  <head>
+  <title>Spell List</title>
+  <style type="text/css">
+    body {
+      color: #636c75;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, .5);
+      font-family: Helvetica, Arial, sans-serif;
+    }
+    h1 {
+      margin: 8px 0;
+      padding: 0;
+    }
+    .commands {
+      font-size: 13px;
+    }
+    li {
+      list-style-type: none;
+      border-bottom: 1px solid #eee;
+      margin: 6px 0 0 0;
+      padding-bottom: 5px;
+    }
+    li:last-child {
+      border: 0;
+    }
+  </style>
+  </head>
+  <body>
+    <h1>Spell List</h1>
+    <ul class="commands">
+      #{spells}
+    </ul>
+  </body>
+</html>
+`;
 
 var spells = {
    "Acid Splash" : {
