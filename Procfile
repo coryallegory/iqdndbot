@@ -1,1 +1,1 @@
-web: bin/hubot --name qbot --adapter slack
+web: bin/hubot
