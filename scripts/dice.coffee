@@ -3,124 +3,122 @@
 #   Case and whitespace insensitive.
 #   An extension of hubot-scripts/dice.coffee
 #
-#   > hubot roll d6
-#   I rolled 5. [5]
+#   > roll d6
+#   5  [rolls: 5]
 #
-#   > hubot roll 2d6
-#   I rolled 6. [4,2]
+#   > roll 2d6
+#   6  [rolls: 4,2]
 #
-#   > hubot roll 2x 3d6 + 2 for luck
-#   I rolled (for luck):
-#   11 [4,2,3]+2
-#   17 [6,6,3]+2
+#   > roll 2x 3d6 + 2 for luck
+#   11 for luck [rolls: 4,2,3]
+#   17 for luck [rolls: 6,6,3]
 #
-#   > hubot advantage
-#   I rolled 2. [2,20]
+#   > roll advantage
+#   19  [rolls: 2,19]
 #
-#   > hubot disadvantage +8 whether hits
-#   I rolled 25 (whether hits). [10,17]+8
+#   > roll disadvantage +8 for hit check
+#   10 for hit check [rolls: 10,17]
 #
 # Dependencies:
-#   None
+#   mathjs
 #
 # Configuration:
 #   None
 #
 # Commands:
-#   hubot roll [<r>x] [<c>]d<s> [<+|-> <m>] [<t>] - Roll <s> sided dice. Optional roll count <c>, optional <+|-> modifier, optionally repeat roll <r> times, optional label text <t>.
-#   hubot check [<r>x] [<c>]d<s> [<+|-> <m>] [<t>] - Alias for 'hubot roll'
-#   hubot advantage [<+|-> <m>] [<t>] - Roll 2xd20, take the higher value and apply modifier. Optional label text may be appended.
-#   hubot disadvantage [<+|-> <m>] [<t>] - Roll 2xd20, take the lower value and apply modifier. Optional label text may be appended.
-#
+#   roll [#x] #d# [+|-#d# +|-# ...] [label]- optional #x will repeat the command, can concatenate any number of dice rolls and arithmetic modifiers.
+#   roll [#x] (advantage|disadvantage) [+|- #] - optional #x will repeat the command, rolls d20 twice and applies optional modifier. Advantage takes greater value, disadvantage takes lesser value.
+#   
 # Author:
 #   coryallegory
 #
 
+math = require('mathjs')
+
+
+# return int, roll value
 roll = (sides) ->
   1 + Math.floor(Math.random() * sides)
 
-rollSet = (dice, sides) ->
-  roll(sides) for i in [0...dice]
+# return int[], roll values
+rollMultiple = (numdice, sides) ->
+  roll(sides) for i in [0...numdice]
 
-rollSets = (count, dice, sides) ->
-  rollSet(dice, sides) for [0...count]
+sum = (array) ->
+  array.reduce (x, y) -> x + y
+# return int[], sum of each roll multiples
 
-setTotals = (sets) ->
-  sets.map( (set) -> (set.reduce (a,b) -> a+b) )
-
-maxValue = (array) ->
-  Math.max.apply(Math, array)
-
-minValue = (array) ->
-  Math.min.apply(Math, array)
-
-rejectionResponse = (queryValues) ->
-  if queryValues.repeats < 1
-    return "I don't know how to roll less than one set of rolls."
-  if queryValues.repeats > 100
-    return "I'm not going to roll more than 100 sets of rolls for you."
-  if queryValues.sides < 1
-    return "I don't know how to roll a zero-sided die."
-  if queryValues.dice > 50
-    return "I'm not going to roll more than 50 dice for you."
-
-critAlert = (rollValue, queryValues) ->
-  if ( queryValues.sides == 20 && queryValues.dice == 1 )
-    if rollValue == 20
-      return "*Crit!* "
-    else if rollValue == 1
-      return "*Fail!* "
-  return ""
 
 module.exports = (robot) ->
 
-  robot.respond /(roll|check)\s+((\d+)\s*x)?\s*(\d+)?d(\d+)\s*((\+|-)\s*\d+)?(.*)$/i, (msg) ->
+  robot.hear /roll ((\d*) ?x ?)?(\d*)d(\d+)(( ?(\+|-) ?\d*(d\d+)?)*) ?(.*)$/i, (msg) ->
+    repeats = parseInt(msg.match[2] || "1")
+    numdice = parseInt(msg.match[3] || "1")
+    sides = parseInt msg.match[4]
+    extras = msg.match[5] || ""
+    label = (msg.match[..].pop() || "").trim()
 
-    q = {
-      repeats: parseInt(msg.match[3] ? "1")
-      dice: parseInt(msg.match[4] ? "1")
-      sides: parseInt msg.match[5]
-      modifierNum: parseInt((msg.match[6] ? "0").replace(/[\+\s]+/gi, ""))
-      modifierString: (msg.match[6] ? "").replace(/\s/gi,"")
-      label: (msg.match[8] ? "").trim()
-    }
+    if repeats < 1
+      msg.reply "I don't know how to roll less than one set of rolls."
+      return
+    if repeats > 100
+      msg.reply "I'm not going to roll more than 100 sets of rolls."
+      return
+    if sides < 1
+      msg.reply "I don't know how to roll a zero-sided die."
+      return
+    if numdice > 50
+      msg.reply "I'm not going to roll more than 50 dice for you."
+      return
 
-    if (res = rejectionResponse(q))
-      msg.reply res
-    else
-      sets = rollSets(q.repeats, q.dice, q.sides)
+    for [0...repeats]
+      rolls = rollMultiple(numdice, sides)
 
-      if q.label.length > 0
-        q.label = " ("+q.label+")"
-      if sets.length == 1
-        msg.reply "#{critAlert(setTotals(sets)[0], q)}I rolled *#{setTotals(sets)[0]+q.modifierNum}*#{q.label}. [#{sets[0]}]#{q.modifierString}"
-      else
-        totals = setTotals(sets)
-        msg.reply "I rolled#{q.label}:#{("\n"+critAlert(totals[i], q)+"*"+(totals[i]+q.modifierNum)+"* ["+sets[i].toString()+"]"+q.modifierString) for i in [0...sets.length]}"
+      critString = ""
+      if numdice == 1
+        if rolls[0] == 1 then critString = "*Fail!* "
+        else if rolls[0] == 20 then critString = "*Crit!* "
 
+      extraTotal = 0
+      matches = (extras.match /(\+|-) ?\d*(d\d+)?/gi) || []
+      for extra, i in matches
+        parts = extra.trim().match /(\+|-) ?(\d*)(d(\d+))?$/i
+        operator = parts[1]
+        n = parseInt(parts[2])
+        s = parseInt(parts[4])
+        if isNaN(s)
+          extraTotal += math.eval(operator + n)
+        else
+          critString = ""
+          if n > 50
+            msg.reply "I'm not going to roll more than 50 dice for you."
+            return
+          if s < 1
+            msg.reply "I don't know how to roll a zero-sided die."
+            return
+          rolls = rolls.concat rollMultiple(n, s)
 
-  robot.respond /(dis)?advantage\s*((\+|-)\s*\d+)?(.*)$/i, (msg) ->
-    q = {
-      repeats: 2
-      dice: 1
-      sides: 20
-      modifierNum: parseInt((msg.match[2] ? "0").replace(/[\+\s]+/gi, ""))
-      modifierString: (msg.match[2] ? "").replace(/\s/gi,"")
-      label: (msg.match[4] ? "").trim()
-    }
-    disadvantage = msg.match[1]?
+      total = extraTotal + sum(rolls)
 
-    if (res = rejectionResponse(q))
-      msg.reply res
-    else
-      sets = rollSets(q.repeats, q.dice, q.sides)
-      totals = setTotals(sets)
+      msg.reply critString + "*#{total}* _#{label} [rolls: #{rolls.join(',')}]_"
+
+  robot.hear /roll ((\d+) ?x ?)?(dis)?advantage\s*(((\+|-)\s*\d+\s*)*)(.*)$/i, (msg) ->
+    repeats = parseInt(msg.match[2] || "1")
+    disadvantage = msg.match[3]?
+    modifier = math.eval(msg.match[4] || "0")
+    label = (msg.match[..].pop() || "").trim()
+
+    for [0...repeats]
+      r1 = roll(20)
+      r2 = roll(20)
+
+      critString = ""
       if (disadvantage)
-        pick = minValue(totals)
+        pick = Math.min(r1, r2)
+        if pick == 1 then critString = "*Fail!* "
       else
-        pick = maxValue(totals)
+        pick = Math.max(r1, r2)
+        if pick == 20 then critString = "*Crit!* "
+      pick += modifier
 
-      if q.label.length > 0
-        q.label = " ("+q.label+")"
-
-      msg.reply "#{critAlert(pick, q)}I rolled *#{pick+q.modifierNum}*#{q.label}. [#{sets.join(',')}]#{q.modifierString}"
+      msg.reply critString + "*#{pick}* _#{label} [rolls: #{r1},#{r2}]_"
