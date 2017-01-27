@@ -46,7 +46,9 @@ rollMultiple = (numdice, sides) ->
 
 sum = (array) ->
   array.reduce (x, y) -> x + y
-# return int[], sum of each roll multiples
+
+deepSum = (array) ->
+  sum array.map(sum)
 
 
 module.exports = (robot) ->
@@ -72,12 +74,13 @@ module.exports = (robot) ->
       return
 
     for [0...repeats]
-      rolls = rollMultiple(numdice, sides)
+      rolls = []
+      rolls.push rollMultiple(numdice, sides)
 
       critString = ""
       if numdice == 1
-        if rolls[0] == 1 then critString = "*Fail!* "
-        else if rolls[0] == 20 then critString = "*Crit!* "
+        if rolls[0][0] == 1 then critString = "*Fail!* "
+        else if rolls[0][0] == 20 then critString = "*Crit!* "
 
       extraTotal = 0
       matches = (extras.match /(\+|-) ?\d*(d\d+)?/gi) || []
@@ -96,11 +99,11 @@ module.exports = (robot) ->
           if s < 1
             msg.reply "I don't know how to roll a zero-sided die."
             return
-          rolls = rolls.concat rollMultiple(n, s)
+          rolls.push rollMultiple(n, s)
 
-      total = extraTotal + sum(rolls)
+      total = extraTotal + deepSum(rolls)
 
-      msg.reply critString + "*#{total}* _#{label} [rolls: #{rolls.join(',')}]_"
+      msg.reply critString + "*#{total}* _#{label} (rolls: [#{rolls.join("],[")}])_"
 
   robot.hear /roll ((\d+) ?x ?)?(dis)?advantage\s*(((\+|-)\s*\d+\s*)*)(.*)$/i, (msg) ->
     repeats = parseInt(msg.match[2] || "1")
@@ -121,4 +124,4 @@ module.exports = (robot) ->
         if pick == 20 then critString = "*Crit!* "
       pick += modifier
 
-      msg.reply critString + "*#{pick}* _#{label} [rolls: #{r1},#{r2}]_"
+      msg.reply critString + "*#{pick}* _#{label} (rolls: #{r1},#{r2})_"
