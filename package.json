@@ -5,7 +5,7 @@
   "author": "Cory Metcalfe <corymetcalfe@gmail.com>",
   "description": "A simple helpful robot for your Company",
   "scripts": {
-    "start": "npm install && hubot --name $HUBOT_NAME"
+    "start": "npm install && hubot --name hubot"
   },
   "dependencies": {
     "coffee-script": "^1.12.3",
