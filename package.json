@@ -13,7 +13,8 @@
     "hubot-help": "^0.2.0",
     "hubot-rules": "^0.1.1",
     "hubot-slack": "^4.2.2",
-    "mathjs": "^3.9.0"
+    "mathjs": "^3.9.0",
+    "newrelic": "^1.36.2"
   },
   "engines": {
     "node": ">= 0.10.x",
