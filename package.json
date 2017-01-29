@@ -4,9 +4,6 @@
   "private": true,
   "author": "Cory Metcalfe <corymetcalfe@gmail.com>",
   "description": "A simple helpful robot for your Company",
-  "scripts": {
-    "start": "npm install && hubot"
-  },
   "dependencies": {
     "hubot": "^2.19.0",
     "hubot-diagnostics": "0.0.1",
