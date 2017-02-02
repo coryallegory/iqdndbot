@@ -106,9 +106,9 @@ module.exports = (robot) ->
               return
             rolls.push rollMultiple(n, s)
 
-      total = extraTotal + deepSum(rolls)
+        total = extraTotal + deepSum(rolls)
 
-      msg.reply critString + "*#{total}* _#{label} (rolls: [#{rolls.join("],[")}])_"
+        msg.reply critString + "*#{total}* _#{label} (rolls: [#{rolls.join("],[")}])_"
     lastProcessor(lastMatches, msg)
 
   robot.hear /roll ((\d+) ?x ?)?(dis)?advantage\s*(((\+|-)\s*\d+\s*)*)(.*)$/i, (msg) ->
