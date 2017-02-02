@@ -137,7 +137,7 @@ module.exports = (robot) ->
 
   robot.hear /reroll$/i, (msg) ->
     if !!lastMatches and !!lastProcessor
-      msg.send lastMatches[0]
+      msg.send "_"+lastMatches[0]+"_"
       lastProcessor(lastMatches, msg)
     else
       msg.reply "Sorry, I don't remember any recent rolls."
