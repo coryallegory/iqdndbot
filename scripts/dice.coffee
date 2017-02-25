@@ -180,7 +180,9 @@ module.exports = (robot) ->
       matches = lastMatchesByName[user]
       processor = lastProcessorByName[user]
     if !!matches and !!processor
-      msg.send "_"+matches[0]+"_"
       processor(matches, msg)
+      # hubot-slack sends message in reverse order for some reason
+      # https://github.com/slackapi/hubot-slack/issues/379
+      msg.send "_"+matches[0]+"_"
     else
       msg.reply "Sorry, I don't remember any recent rolls."
