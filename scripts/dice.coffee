@@ -29,7 +29,7 @@
 #   roll [#x] #d# [+|-#d# +|-# ...] [label]- optional #x will repeat the command, can concatenate any number of dice rolls and arithmetic modifiers.
 #   roll [#x] (advantage|disadvantage) [+|- #] - optional #x will repeat the command, rolls d20 twice and applies optional modifier. Advantage takes greater value, disadvantage takes lesser value.
 #   reroll - repeat last roll command
-#   
+#
 # Author:
 #   coryallegory
 #
@@ -38,6 +38,8 @@ math = require('mathjs')
 
 lastMatches = undefined
 lastProcessor = undefined
+lastMatchesByName = {}
+lastProcessorByName = {}
 
 # return int, roll value
 roll = (sides) ->
@@ -145,6 +147,9 @@ module.exports = (robot) ->
           advantageProcessor(command.match(advantageRegex), msg)
         else
           rollProcessor(command.match(rollRegex), msg)
+    user = msg.message.user.name
+    lastMatchesByName[user] = lastMatches
+    lastProcessorByName[user] = lastProcessor
     lastProcessor(lastMatches, msg)
 
   robot.hear rollRegex, (msg) ->
@@ -152,6 +157,9 @@ module.exports = (robot) ->
       return
     lastMatches = msg.match
     lastProcessor = rollProcessor
+    user = msg.message.user.name
+    lastMatchesByName[user] = lastMatches
+    lastProcessorByName[user] = lastProcessor
     lastProcessor(lastMatches, msg)
 
   robot.hear advantageRegex, (msg) ->
@@ -159,11 +167,20 @@ module.exports = (robot) ->
       return
     lastMatches = msg.match
     lastProcessor = advantageProcessor
+    user = msg.message.user.name
+    lastMatchesByName[user] = lastMatches
+    lastProcessorByName[user] = lastProcessor
     lastProcessor(lastMatches, msg)
 
-  robot.hear /reroll$/i, (msg) ->
-    if !!lastMatches and !!lastProcessor
-      msg.send "_"+lastMatches[0]+"_"
-      lastProcessor(lastMatches, msg)
+  robot.hear /reroll( mine)?$/i, (msg) ->
+    matches = lastMatches
+    processor = lastProcessor
+    if msg.matches[1] != undefined
+      user = msg.message.user.name
+      matches = lastMatchesByName[user]
+      processor = lastProcessorByName[user]
+    if !!matches and !!processor
+      msg.send "_"+matches[0]+"_"
+      processor(matches, msg)
     else
       msg.reply "Sorry, I don't remember any recent rolls."
