@@ -82,7 +82,7 @@ rollProcessor = (matches, msg) ->
     rolls.push rollMultiple(numdice, sides)
 
     critString = ""
-    if numdice == 1
+    if numdice == 1 && sides == 20
       if rolls[0][0] == 1 then critString = "*Fail!* "
       else if rolls[0][0] == 20 then critString = "*Crit!* "
 
@@ -175,7 +175,7 @@ module.exports = (robot) ->
   robot.hear /reroll( mine)?$/i, (msg) ->
     matches = lastMatches
     processor = lastProcessor
-    if msg.matches[1] != undefined
+    if msg.match[1] != undefined
       user = msg.message.user.name
       matches = lastMatchesByName[user]
       processor = lastProcessorByName[user]
