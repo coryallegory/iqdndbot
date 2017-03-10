@@ -5,9 +5,8 @@ module.exports = (robot) ->
 
   robot.hear /test/, (msg) ->
     msg.send "I heard you"
-    msg.send msg.envelope.room.toLowerCase()
-    msg.send msg.envelope.room.messages
-    msg.send msg.envelope
+    msg.send msg.envelope.room
+    msg.send msg.message.room
 
   robot.hear /\?/, (msg) ->
     if msg.envelope.room.name.toLowerCase() == "wolfpack"
