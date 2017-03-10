@@ -3,9 +3,13 @@ module.exports = (robot) ->
   wolfpackQuestionTimestamp = null
   wolfpackQuestioner = null
 
-  robot.hear /\?/, (msg) ->
+  robot.hear /test/, (msg) ->
     msg.send "I heard you"
-    msg.send msg.envelope.room.name
+    msg.send msg.envelope.room.toLowerCase()
+    msg.send msg.envelope.room.messages
+    msg.send msg.envelope
+
+  robot.hear /\?/, (msg) ->
     if msg.envelope.room.name.toLowerCase() == "wolfpack"
       wolfpackQuestionTimestamp = Date.now()
       wolfpackQuestioner = msg.envelope.name
