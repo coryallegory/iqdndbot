@@ -5,9 +5,8 @@ module.exports = (robot) ->
 
   robot.hear /\?/, (msg) ->
     msg.send "I heard you"
-    msg.send msg.envelope.room
-    msg.send msg.envelope.room.toLowerCase()
-    if msg.envelope.room.toLowerCase() == "wolfpack"
+    msg.send msg.envelope.room.name
+    if msg.envelope.room.name.toLowerCase() == "wolfpack"
       wolfpackQuestionTimestamp = Date.now()
       wolfpackQuestioner = msg.envelope.name
 
@@ -15,7 +14,7 @@ module.exports = (robot) ->
       msg.send wolfpackQuestioner
 
   robot.hear /^[^\?]*$/, (msg) ->
-    if msg.envelope.room.toLowerCase() == "wolfpack" && msg.envelope.name != wolfpackQuestioner
+    if msg.envelope.room.name.toLowerCase() == "wolfpack" && msg.envelope.name != wolfpackQuestioner
       now = Date.now()
       elapsedTimeInMs = (now - wolfpackQuestionTimestamp)
 
