@@ -4,6 +4,7 @@ module.exports = (robot) ->
   wolfpackQuestioner = null
 
   robot.hear /\?/, (msg) ->
+    msg.send "I heard you"
     if msg.envelope.room.toLowerCase() == "wolfpack"
       wolfpackQuestionTimestamp = Date.now()
       wolfpackQuestioner = msg.envelope.name
