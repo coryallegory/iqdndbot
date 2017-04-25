@@ -143,7 +143,7 @@ module.exports = (robot) ->
         command = c.trim()
         if command.indexOf("roll") == -1
           command = "roll ".concat(command)
-        if command.indexOf("advantage") >= 0
+        if ("roll " + command).match advantageRegex
           advantageProcessor(command.match(advantageRegex), msg)
         else
           rollProcessor(command.match(rollRegex), msg)
