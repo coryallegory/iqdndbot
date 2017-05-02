@@ -56,8 +56,13 @@ deepSum = (array) ->
   sum array.map(sum)
 
 
-rollRegex = /roll ((\d*) ?x ?)?(\d*)d(\d+)(( ?(\+|-) ?\d*(d\d+)?)*) ?(.*)$/i
+rollRegex = /roll (?:stats)$|roll ((\d*) ?x ?)?(\d*)d(\d+)(( ?(\+|-) ?\d*(d\d+)?)*) ?(.*)$/i
 rollProcessor = (matches, msg) ->
+
+  if matches[0] != undefined && matches[0].indexOf("stats") > 0
+    statsProcessor(msg)
+    return
+
   repeats = parseInt(matches[2] || "1")
   numdice = parseInt(matches[3] || "1")
   sides = parseInt matches[4]
@@ -132,6 +137,23 @@ advantageProcessor = (matches, msg) ->
 
     msg.reply critString + "*#{pick}* _#{label} (rolls: #{r1},#{r2})_"
 
+statsProcessor = (msg) ->
+  rolls = []
+  minimum = 6
+  total = 0
+  for [0...4]
+    currentRoll = roll(6)
+    if (currentRoll < minimum)
+      minimum = currentRoll
+    total += currentRoll
+    rolls.push(currentRoll)
+  
+  total -= minimum
+
+  msg.reply "*#{total}* _(rolls: [#{rolls.join("],[")}])_"
+
+  
+  
 
 module.exports = (robot) ->
 
