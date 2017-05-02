@@ -56,10 +56,10 @@ deepSum = (array) ->
   sum array.map(sum)
 
 
-rollRegex = /roll (?:stats)$|roll ((\d*) ?x ?)?(\d*)d(\d+)(( ?(\+|-) ?\d*(d\d+)?)*) ?(.*)$/i
+rollRegex = /roll (?:stat)$|roll ((\d*) ?x ?)?(\d*)d(\d+)(( ?(\+|-) ?\d*(d\d+)?)*) ?(.*)$/i
 rollProcessor = (matches, msg) ->
 
-  if matches[0] != undefined && matches[0].indexOf("stats") > 0
+  if matches[0] != undefined && matches[0].indexOf("stat") > 0
     statsProcessor(msg)
     return
 
