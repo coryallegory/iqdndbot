@@ -5,16 +5,16 @@
   "author": "Cory Metcalfe <corymetcalfe@gmail.com>",
   "description": "A simple helpful robot for your Company",
   "dependencies": {
+    "coffee-script": "^1.12.7",
     "hubot": "^2.19.0",
-    "hubot-diagnostics": "0.0.1",
-    "hubot-help": "^0.2.0",
-    "hubot-rules": "^0.1.1",
-    "hubot-slack": "^4.2.2",
-    "mathjs": "^3.9.0",
-    "newrelic": "^1.36.2"
+    "hubot-diagnostics": "0.0.2",
+    "hubot-help": "^0.2.2",
+    "hubot-rules": "^0.1.2",
+    "hubot-slack": "^4.3.4",
+    "mathjs": "^3.9.0"
   },
   "engines": {
-    "node": "^6.9.4",
-    "npm": "^4.0.5"
+    "node": "~8.1.4",
+    "npm": "~5.0.3"
   }
 }
