@@ -28,6 +28,7 @@
 # Commands:
 #   roll [#x] #d# [+|-#d# +|-# ...] [label]- optional #x will repeat the command, can concatenate any number of dice rolls and arithmetic modifiers.
 #   roll [#x] (advantage|disadvantage) [+|- #] - optional #x will repeat the command, rolls d20 twice and applies optional modifier. Advantage takes greater value, disadvantage takes lesser value.
+#   roll stat - perform a char stat roll
 #   reroll - repeat last roll command
 #
 # Author:
