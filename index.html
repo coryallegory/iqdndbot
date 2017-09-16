@@ -17,6 +17,9 @@
       color: black;
       font-family: "Trebuchet MS", Helvetica, sans-serif;
     }
+    .character.dead {
+      box-shadow: inset 0 0 0 1000px rgba(255, 0, 0, 0.5);
+    }
     .name {
       padding-left: 5px;
       font-weight: bold;
@@ -49,13 +52,13 @@
 </head>
 <body>
 
-<div class="character" style="background-image: url('');">
+<div class="character" style="background-image: url('img/angus.png');">
   <div class="name">Angus</div>
   <div class="type">Halfling Wizard</div>
   <div class="person">Tyler</div>
 </div>
 
-<div class="character" style="background-image: url('');">
+<div class="character" style="background-image: url('img/ferris.png');">
   <div class="name">Ferris Buckshire</div>
   <div class="type">Halfling Bard</div>
   <div class="person">Brenden</div>
@@ -73,7 +76,7 @@
   <div class="person">Cory</div>
 </div>
 
-<div class="character" style="background-image: url('');">
+<div class="character dead" style="background-image: url('img/lan.png');">
   <div class="name">Lan</div>
   <div class="type">Half-Elf Druid as Wolf</div>
   <div class="person">Tyler</div>
@@ -85,7 +88,7 @@
   <div class="person">Jeff</div>
 </div>
 
-<div class="character" style="background-image: url('');">
+<div class="character dead" style="background-image: url('img/rawhide.png');">
   <div class="name">Rawhide</div>
   <div class="type">Wolf as Half-Elf</div>
   <div class="person">Tyler</div>
